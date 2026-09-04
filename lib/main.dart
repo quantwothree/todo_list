@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_list/models/todo.dart';
 
 void main() {
   runApp(const TodoApp());
@@ -26,18 +27,27 @@ class TodoHomePage extends StatefulWidget {
 }
 
 class _TodoHomePageState extends State<TodoHomePage> {
+  final List<Todo> todos = <Todo>[
+    Todo(name: "Shopping", description: "Buy milk"),
+    Todo(name: "Paint", description: "Mona Lisa"),
+    Todo(name: "Dance", description: "Tango"),
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-
         title: Text(widget.title),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: .center,
-          children: [const Text('This is the app')],
+        child: ListView.builder(
+          itemCount: todos.length,
+          itemBuilder: (BuildContext context, int i) {
+            return Container(
+              padding: const EdgeInsets.all(5),
+              child: Text(todos[i].toString()),
+            );
+          },
         ),
       ),
     );
