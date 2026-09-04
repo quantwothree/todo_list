@@ -32,6 +32,29 @@ class _TodoHomePageState extends State<TodoHomePage> {
     Todo(name: "Paint", description: "Mona Lisa"),
     Todo(name: "Dance", description: "Tango"),
   ];
+
+  final TextEditingController _controlName = TextEditingController(); 
+  final TextEditingController _controlDescription = TextEditingController();
+
+  void _openAddTodo() {
+    showDialog(
+      context: context, 
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            // children: [Text(todos[0].name), Text(todos[1].name), Text(todos[2].name) ]
+            children: [ListView.builder(
+              itemCount: todos.length,
+              itemBuilder: (BuildContext context, int i) {
+                return Text(todos[i].name + todos[i].description);
+              })]
+          ),
+        );
+      });
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,6 +73,12 @@ class _TodoHomePageState extends State<TodoHomePage> {
           },
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _openAddTodo,
+        tooltip: "Add something",
+        child: 
+        ),
+
     );
   }
 }
