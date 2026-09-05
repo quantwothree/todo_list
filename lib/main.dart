@@ -33,27 +33,53 @@ class _TodoHomePageState extends State<TodoHomePage> {
     Todo(name: "Dance", description: "Tango"),
   ];
 
-  final TextEditingController _controlName = TextEditingController(); 
+  final TextEditingController _controlName = TextEditingController();
   final TextEditingController _controlDescription = TextEditingController();
 
   void _openAddTodo() {
     showDialog(
-      context: context, 
+      context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           content: Column(
             mainAxisSize: MainAxisSize.min,
-            // children: [Text(todos[0].name), Text(todos[1].name), Text(todos[2].name) ]
-            children: [ListView.builder(
-              itemCount: todos.length,
-              itemBuilder: (BuildContext context, int i) {
-                return Text(todos[i].name + todos[i].description);
-              })]
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(5, 8, 5, 0),
+                child: Text("Name"),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                child: TextFormField(controller: _controlName),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                child: Text("Description"),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(5, 0, 5, 8),
+                child: TextFormField(controller: _controlDescription),
+              ),
+              ElevatedButton(
+                child: const Text("Submit"),
+                onPressed: () {
+                  setState(() {
+                    todos.add(
+                      Todo(
+                        name: _controlName.text,
+                        description: _controlDescription.text,
+                      ),
+                    );
+                  });
+                  Navigator.pop(context);
+                },
+              ),
+            ],
           ),
         );
-      });
+      },
+    );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -76,9 +102,8 @@ class _TodoHomePageState extends State<TodoHomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: _openAddTodo,
         tooltip: "Add something",
-        child: 
-        ),
-
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }
