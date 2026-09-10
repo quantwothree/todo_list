@@ -27,12 +27,6 @@ class TodoHomePage extends StatefulWidget {
 }
 
 class _TodoHomePageState extends State<TodoHomePage> {
-  final List<Todo> todos = <Todo>[
-    Todo(name: "Shopping", description: "Buy milk"),
-    Todo(name: "Paint", description: "Mona Lisa"),
-    Todo(name: "Dance", description: "Tango"),
-  ];
-
   final TextEditingController _controlName = TextEditingController();
   final TextEditingController _controlDescription = TextEditingController();
 
