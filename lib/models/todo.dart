@@ -4,9 +4,10 @@ class Todo {
   final bool complete;
 
   Todo({required this.name, required this.description, this.complete = false});
+  // {} in constructors mean the properties are named properties
 
   @override
   String toString() {
-    return "$name - ($description)";
+    return "$name - ($description)"; // string interpolation
   }
 }

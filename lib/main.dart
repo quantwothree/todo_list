@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:todo_list/models/todo.dart';
+import 'package:todo_list/models/todo_list.dart';
+import 'package:todo_list/views/todo_widget.dart';
 
 void main() {
-  runApp(const TodoApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => TodoList(),
+      child: const TodoApp(),
+    ),
+  );
 }
 
 class TodoApp extends StatelessWidget {
@@ -58,7 +66,7 @@ class _TodoHomePageState extends State<TodoHomePage> {
                 child: const Text("Submit"),
                 onPressed: () {
                   setState(() {
-                    todos.add(
+                    Provider.of<TodoList>(context, listen: false).add(
                       Todo(
                         name: _controlName.text,
                         description: _controlDescription.text,
@@ -81,14 +89,27 @@ class _TodoHomePageState extends State<TodoHomePage> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
+        actions: [
+          Consumer<TodoList>(
+            builder: (context, model, child) {
+              return Padding(
+                padding: const EdgeInsets.only(right: 16.0),
+                child: Center(
+                  child: Text('${model.uncompletedCount} tasks left'),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: Center(
-        child: ListView.builder(
-          itemCount: todos.length,
-          itemBuilder: (BuildContext context, int i) {
-            return Container(
-              padding: const EdgeInsets.all(5),
-              child: Text(todos[i].toString()),
+        child: Consumer<TodoList>(
+          builder: (context, model, child) {
+            return ListView.builder(
+              itemCount: model.todoCount,
+              itemBuilder: (BuildContext context, int i) {
+                return TodoWidget(todo: model.todos[i]);
+              },
             );
           },
         ),
