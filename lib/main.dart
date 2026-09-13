@@ -108,7 +108,16 @@ class _TodoHomePageState extends State<TodoHomePage> {
             return ListView.builder(
               itemCount: model.todoCount,
               itemBuilder: (BuildContext context, int i) {
-                return TodoWidget(todo: model.todos[i]);
+                return Dismissible(
+                  key: GlobalKey(),
+                  onDismissed: (direction) {
+                    Provider.of<TodoList>(
+                      context,
+                      listen: false,
+                    ).delete(model.todos[i]);
+                  },
+                  child: TodoWidget(todo: model.todos[i]),
+                );
               },
             );
           },
