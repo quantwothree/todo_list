@@ -1,7 +1,7 @@
 class Todo {
   final String name;
   final String description;
-  final bool complete;
+  bool complete;
 
   Todo({required this.name, required this.description, this.complete = false});
   // {} in constructors mean the properties are named properties
