@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_list/models/todo.dart';
 import 'package:todo_list/models/todo_list.dart';
+import 'package:todo_list/services/IDataSource.dart';
+import 'package:todo_list/services/SQLDataSource.dart';
 import 'package:todo_list/views/todo_widget.dart';
 
 void main() {
-  runApp(
-    ChangeNotifierProvider(
-      create: (context) => TodoList(),
-      child: const TodoApp(),
+  WidgetsFlutterBinding.ensureInitialized();
+  Get.putAsync<IDataSource>(() => SQLDataSource.createAsync()).whenComplete(
+    () => runApp(
+      ChangeNotifierProvider(
+        create: (context) => TodoList(),
+        child: const TodoApp(),
+      ),
     ),
   );
 }
@@ -104,21 +111,30 @@ class _TodoHomePageState extends State<TodoHomePage> {
       ),
       body: Center(
         child: Consumer<TodoList>(
+          //Consumer will automatically redraw the UI whenever notifyListeners() is called
           builder: (context, model, child) {
-            return ListView.builder(
-              itemCount: model.todoCount,
-              itemBuilder: (BuildContext context, int i) {
-                return Dismissible(
-                  key: GlobalKey(),
-                  onDismissed: (direction) {
-                    Provider.of<TodoList>(
-                      context,
-                      listen: false,
-                    ).delete(model.todos[i]);
-                  },
-                  child: TodoWidget(todo: model.todos[i]),
-                );
-              },
+            return RefreshIndicator(
+              // RefreshIndicator is the pull down to refresh function
+              // In this case, whenever we pull down the screen, the app gets the Todo List from the datasource
+              // onRefresh: model (model is the TodoList).refresh calls the refresh() in TodoList where it gets data from datasource
+              onRefresh: model.refresh,
+              child: ListView.builder(
+                itemCount: model.todoCount,
+                itemBuilder: (BuildContext context, int i) {
+                  return Dismissible(
+                    key: GlobalKey(),
+                    onDismissed: (direction) {
+                      Provider.of<TodoList>(
+                        context,
+                        listen: false,
+                      ).delete(model.todos[i]);
+                      // This calls delete() in TodoList which has notifyListeners() and would trigger this whole Consumer to redraw
+                      // Effectively update the todo list on screeen to reflect the deleted todo
+                    },
+                    child: TodoWidget(todo: model.todos[i]),
+                  );
+                },
+              ),
             );
           },
         ),

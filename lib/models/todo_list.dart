@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:todo_list/models/todo.dart';
 import 'dart:collection';
+import 'package:todo_list/services/IDataSource.dart';
 
 class TodoList extends ChangeNotifier {
   final List<Todo> _todos = <Todo>[];
@@ -9,14 +12,20 @@ class TodoList extends ChangeNotifier {
 
   // => is a shorthand for return in lambda functions
 
-  void add(Todo todo) {
-    _todos.add(todo);
-    notifyListeners();
+  TodoList() {
+    refresh();
+  } // Constructor that calls refresh() to get Todos from datasource when TodoList is instantiated
+
+  Future<void> add(Todo todo) async {
+    IDataSource dataSource = Get.find();
+    await dataSource.add(todo);
+    await refresh();
   }
 
-  void delete(Todo todo) {
-    _todos.remove(todo);
-    notifyListeners();
+  Future<void> delete(Todo todo) async {
+    IDataSource dataSource = Get.find();
+    await dataSource.delete(todo);
+    await refresh();
   }
 
   void removeAll() {
@@ -24,22 +33,21 @@ class TodoList extends ChangeNotifier {
     notifyListeners();
   }
 
-  void update(Todo todo) {
-    int index = _todos.indexWhere(
-      (element) => element.name.toLowerCase() == todo.name.toLowerCase(),
-
-      // This is a lambda function where it doesn't need a function name
-      // Hence we can only see the parameters part of it ie. (element)
-      // This lambda function is trying to find the index of the todo getting passed into Update()
-      // By using the in built indexWhere() which loops through the _todos list
-      // Comparing the names of each item in the list to the name of the todo passed into Update()
-      // Then returns its index instead of the object itself (because thats how indexWhere() behave)
-    );
-    _todos[index] = todo;
-    notifyListeners();
+  Future<void> update(Todo todo) async {
+    IDataSource dataSource = Get.find();
+    await dataSource.edit(todo);
+    await refresh();
   }
 
   int get uncompletedCount {
     return _todos.where((element) => element.complete == false).length;
+  }
+
+  Future<List<Todo>> refresh() async {
+    IDataSource dataSource = Get.find();
+    _todos.clear();
+    _todos.addAll(await dataSource.browse());
+    notifyListeners();
+    return _todos;
   }
 }
