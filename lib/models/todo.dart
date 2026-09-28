@@ -1,8 +1,15 @@
+import 'package:hive/hive.dart';
+
+@HiveType(typeId: 0)
 class Todo {
-  final String name;
-  final String description;
-  bool complete;
+  @HiveField(0)
   final String? id;
+  @HiveField(1)
+  final String name;
+  @HiveField(2)
+  final String description;
+  @HiveField(3)
+  bool complete;
 
   Todo({
     required this.name,
@@ -11,6 +18,21 @@ class Todo {
     this.id,
   });
   // {} in constructors mean the properties are named properties
+
+  Todo copyWith({
+    String? id,
+    String? name,
+    String? description,
+    bool? complete,
+  }) {
+    return Todo(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      complete: complete ?? this.complete,
+    );
+  }
+  // to build a clone of a Todo object to use in HiveDataSource's add() because Todo's id is final
 
   @override
   String toString() {
@@ -54,5 +76,28 @@ class Todo {
       description: map['description'],
       complete: complete,
     );
+  }
+}
+
+class TodoAdapter extends TypeAdapter<Todo> {
+  @override
+  Todo read(BinaryReader reader) {
+    return Todo(
+      id: reader.read(),
+      name: reader.read(),
+      description: reader.read(),
+      complete: reader.read(),
+    );
+  }
+
+  @override
+  int get typeId => 0;
+
+  @override
+  void write(BinaryWriter writer, Todo obj) {
+    writer.write(obj.id);
+    writer.write(obj.name);
+    writer.write(obj.description);
+    writer.write(obj.complete);
   }
 }
