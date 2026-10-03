@@ -1,25 +1,35 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
+import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 import 'package:todo_list/main.dart';
+import 'package:todo_list/models/todo_list.dart';
+import 'package:todo_list/services/APIDataSource.dart';
+import 'package:todo_list/services/IDataSource.dart';
+import 'package:todo_list/services/MockDataSource.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+    WidgetsFlutterBinding.ensureInitialized();
+    Get.putAsync<IDataSource>(() => MockDataSource.createAsync());
+
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(
+      ChangeNotifierProvider(
+        create: (context) => TodoList(),
+        child: const TodoApp(),
+      ),
+    );
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);
     expect(find.text('1'), findsNothing);
 
     // Tap the '+' icon and trigger a frame.
+    await tester.tap(find.byIcon(Icons.add));
+    await tester.pump();
+    await tester.enterText(,"Some task");
+    await tester.enterText(,"Some description");
     await tester.tap(find.byIcon(Icons.add));
     await tester.pump();
 
