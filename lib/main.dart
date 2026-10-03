@@ -4,13 +4,14 @@ import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_list/models/todo.dart';
 import 'package:todo_list/models/todo_list.dart';
+import 'package:todo_list/services/APIDataSource.dart';
 import 'package:todo_list/services/IDataSource.dart';
 import 'package:todo_list/services/SQLDataSource.dart';
 import 'package:todo_list/views/todo_widget.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  Get.putAsync<IDataSource>(() => SQLDataSource.createAsync()).whenComplete(
+  Get.putAsync<IDataSource>(() => APIDataSource.createAsync()).whenComplete(
     () => runApp(
       ChangeNotifierProvider(
         create: (context) => TodoList(),
