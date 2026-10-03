@@ -34,6 +34,9 @@ void main() {
     );
     await todoList.add(newTodo);
     expect(todoList.todoCount, 1);
+    expect(todoList.todos.first.id, '1');
+    expect(todoList.todos.first.name, 'test add');
+    expect(todoList.todos.first.description, 'this should be added');
   });
 
   test('Update: should update the details of a todo', () async {
@@ -46,12 +49,14 @@ void main() {
 
     expect(todoList.todoCount, 1);
 
-    final updatedTodo = Todo(id: '666', name: 'satan', description: 'hahaha');
+    final updatedTodo = Todo(id: '99', name: 'satan', description: 'hahaha');
 
     await todoList.update(updatedTodo);
 
     expect(todoList.todoCount, 1); // Ensure it didn't add a second todo
-    // expect info to match?
+    expect(todoList.todos.first.id, '99');
+    expect(todoList.todos.first.name, 'satan');
+    expect(todoList.todos.first.description, 'hahaha');
   });
 
   test('Delete: should remove the task from the list', () async {

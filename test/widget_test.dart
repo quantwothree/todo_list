@@ -3,17 +3,26 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_list/main.dart';
+import 'package:todo_list/models/todo.dart';
 import 'package:todo_list/models/todo_list.dart';
 import 'package:todo_list/services/APIDataSource.dart';
 import 'package:todo_list/services/IDataSource.dart';
 import 'package:todo_list/services/MockDataSource.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    WidgetsFlutterBinding.ensureInitialized();
-    Get.putAsync<IDataSource>(() => MockDataSource.createAsync());
+  setUp(() async {
+    final mockDataSource = await MockDataSource.createAsync();
+    Get.put<IDataSource>(mockDataSource);
+  });
 
-    // Build our app and trigger a frame.
+  testWidgets('Browse: should render the existing todos', (
+    WidgetTester tester,
+  ) async {
+    final database = Get.find<IDataSource>();
+    await database.add(
+      Todo(id: '1', name: 'widget test', description: 'please work'),
+    );
+
     await tester.pumpWidget(
       ChangeNotifierProvider(
         create: (context) => TodoList(),
@@ -21,20 +30,8 @@ void main() {
       ),
     );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    await tester.pumpAndSettle();
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-    await tester.enterText(,"Some task");
-    await tester.enterText(,"Some description");
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.text('widget test'), findsOneWidget);
   });
 }
